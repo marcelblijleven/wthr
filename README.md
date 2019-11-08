@@ -1,5 +1,5 @@
 # wthr
-Store darksky weather info in influxdb for grafana
+Store darksky weather info in influxdb
 
 # docker
 Clone the repository and build the docker image
