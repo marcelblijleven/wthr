@@ -5,62 +5,73 @@ def safe_assign(obj, prop, to_type, default):
         return default
 
 
+def check_daytime(time, daily_data):
+    daytime = False
+    daytime_show = -1
+    nighttime_show = 0
+
+    for day in daily_data:
+        sunrise_time = day['sunriseTime']
+        sunset_time = day['sunsetTime']
+
+        if sunrise_time < time < sunset_time:
+            daytime = True
+            daytime_show = 0
+            nighttime_show = -1
+
+            return daytime, daytime_show, nighttime_show
+
+    return daytime, daytime_show, nighttime_show
+
+
+def get_sun_status(daytime, cloud_cover):
+    return 1 - cloud_cover if daytime else 0
+
+
 def forecast_to_points(forecast):
-    current = forecast['currently']
-    today = forecast['daily']['data'][0]
+    daily_data = forecast['daily']['data']
+    hourly_data = forecast['hourly']['data']
+    today = daily_data[0]
 
-    schema = [
-        {
-            'measurement': 'weather',
-            'fields': {
-                # Current weather
-                'apparentTemperature':  safe_assign(
-                    current, 'apparentTemperature', float, 0.0
-                ),
-                'cloudCover': safe_assign(current, 'cloudCover', float, 0.0),
-                'sun': 1 - safe_assign(current, 'cloudCover', float, 0.0),
-                'dewPoint': safe_assign(current, 'dewPoint', float, 0.0),
-                'humidity': safe_assign(current, 'humidity', float, 0.0),
-                'icon': safe_assign(current, 'icon', str, ''),
-                'ozone': safe_assign(current, 'ozone', float, 0.0),
-                'precipIntensity': safe_assign(current, 'precipIntensity', float, 0.0),
-                'precipProbability': safe_assign(
-                    current, 'precipProbability', float, 0.0
-                ),
-                'pressure': safe_assign(current, 'pressure', float, 0.0),
-                'summary': safe_assign(current, 'summary', str, ''),
-                'temperature': safe_assign(current, 'temperature', float, 0.0),
-                'uvIndex': safe_assign(current, 'uvIndex', int, 0),
-                'visibility': safe_assign(current, 'visibility', int, 0),
-                'windBearing': safe_assign(current, 'windBearing', int, 0),
-                'windGust': safe_assign(current, 'windGust', float, 0.0),
-                'windSpeed': safe_assign(current, 'windSpeed', float, 0.0),
+    data = []
 
-                # Today weather
-                'apparentTemperatureMax': safe_assign(
-                    today, 'apparentTemperatureMax', float, 0.0
-                ),
-                'apparentTemperatureMin': safe_assign(
-                    today, 'apparentTemperatureMin', float, 0.0
-                ),
-                'daySummary': safe_assign(today, 'summary', str, ''),
-                'sunriseTime': safe_assign(today, 'sunriseTime', int, 0),
-                'sunsetTime': safe_assign(today, 'sunsetTime', int, 0),
-                'temperatureMax': safe_assign(today, 'temperatureMax', float, 0.0),
-                'temperatureMin': safe_assign(today, 'temperatureMin', float, 0.0),
-                'temperatureHigh': safe_assign(today, 'temperatureHigh', float, 0.0),
-                'temperatureLow': safe_assign(today, 'temperatureLow', float, 0.0),
-                'dayWindBearing': safe_assign(today, 'windBearing', int, 0),
-                'dayVisiblity': safe_assign(today, 'visibility', int, 0),
-                'moonPhase': safe_assign(today, 'moonPhase', float, 0.0),
-                'dayPrecipIntensity': safe_assign(today, 'precipIntensity', float, 0.0),
-                'dayPrecipProbability': safe_assign(today, 'precipProbability', float, 0.0),
-                'dayPrecipType': safe_assign(today, 'precipType', str, '')
-            },
-            'tags': {
-                'source': 'darksky-api'
+    for hour in hourly_data:
+        daytime, daytime_show, nighttime_show = check_daytime(hour['time'], daily_data)
+        cloud_cover = safe_assign(hour, 'cloudCover', float, 0.0)
+        sun_status = get_sun_status(daytime, cloud_cover)
+
+        points = [
+            {
+                'measurement': 'forecast',
+                'fields': {
+                    'apparent_temperature': safe_assign(hour, 'apparentTemperature', float, 0.0),
+                    'temperature': safe_assign(hour, 'temperature', float, 0.0),
+                    'cloud_cover': cloud_cover,
+                    'sun_status': sun_status,
+                    'dew_point': safe_assign(hour, 'dewPoint', float, 0.0),
+                    'humidity': safe_assign(hour, 'humidity', float, 0.0),
+                    'precip_intensity': safe_assign(hour, 'precipIntensity', float, 0.0),
+                    'precip_probability': safe_assign(hour, 'precipProbability', float, 0.0),
+                    'pressure': safe_assign(hour, 'pressure', float, 0.0),
+                    'uv_index': safe_assign(hour, 'uvIndex', int, 0),
+                    'visibility': safe_assign(hour, 'visibility', float, 0.0),
+                    'wind_bearing': safe_assign(hour, 'windBearing', float, 0.0),
+                    'wind_gust': safe_assign(hour, 'windGust', float, 0.0),
+                    'wind_speed': safe_assign(hour, 'windSpeed', float, 0.0),
+                    'sunrise': safe_assign(today, 'sunriseTime', int, 0),
+                    'sunset': safe_assign(today, 'sunsetTime', int, 0),
+                    'daytime_show': daytime_show,
+                    'nightime_show': nighttime_show,
+                    'moon_phase': safe_assign(today, 'moonPhase', float, 0.0),
+                    'ozone': safe_assign(hour, 'ozone', float, 0.0),
+                },
+                'tags': {
+                    'source': 'darksky-api',
+                    'app': 'wthr'
+                }
             }
-        }
-    ]
+        ]
 
-    return schema
+        data.append(points)
+
+    return data

@@ -11,4 +11,5 @@ class Influx:
         )
 
     def write_points(self, points):
-        self.client.write_points(points)
+        self.client.write_points(points,)
+        x = self.client.create_retention_policy()

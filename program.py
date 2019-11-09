@@ -3,27 +3,31 @@ import os
 from apps.utils import forecast_to_points
 from apps.darksky.client import Darksky
 from apps.influxdb.client import Influx
+from apps.settings import DarkskySettings, InfluxdbSettings
 
 
 def program():
-    key = os.getenv('DARKSKY_KEY')
-    lat = os.getenv('DARKSKY_LAT')
-    long = os.getenv('DARKSKY_LONG')
-    units = os.getenv('DARKSKY_UNITS')
-    language = os.getenv('DARKSKY_LANGUAGE')
+    darksky = Darksky(DarkskySettings.key)
 
-    darksky = Darksky(key)
     influx = Influx(
-        host=os.getenv('INFLUX_HOST'),
-        port=os.getenv('INFLUX_PORT'),
-        username=os.getenv('INFLUX_USER'),
-        password=os.getenv('INFLUX_PASSWORD'),
-        database=os.getenv('INFLUX_DB')
+        host=InfluxdbSettings.host,
+        port=InfluxdbSettings.port,
+        username=InfluxdbSettings.username,
+        password=InfluxdbSettings.password,
+        database=InfluxdbSettings.database
     )
 
-    forecast = darksky.forecast(lat, long, units=units, language=language)
+    forecast = darksky.forecast(
+        lat=DarkskySettings.lat,
+        long=DarkskySettings.long,
+        units=DarkskySettings.units,
+        language=DarkskySettings.language
+    )
+
     data_points = forecast_to_points(forecast)
-    influx.write_points(data_points)
+
+    for points in data_points:
+        influx.write_points(points)
 
 
 if __name__ == '__main__':

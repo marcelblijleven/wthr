@@ -9,11 +9,16 @@ class Darksky:
         self.key = key
 
     def forecast(self, lat, long, units='ca', language='nl'):
+        if lat is None or long is None:
+            raise ValueError(
+                'Need both lat and long values to retrieve forecast'
+            )
+
         url = f'https://api.darksky.net/forecast/{self.key}/{lat},{long}'
         params = {
             'units': units,
             'language': language,
-            'exclude': 'minutely,hourly,alerts'
+            'exclude': 'minutely,alerts'
         }
 
         try:
