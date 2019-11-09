@@ -2,6 +2,18 @@
 Store darksky weather info in influxdb
 
 ## env variables
+| var              | val                     |
+|------------------|-------------------------|
+| DARKSKY_KEY      | Darsky api key          |
+| DARKSKY_LAT      | latitude                |
+| DARKSKY_LONG     | longitude               |
+| DARKSKY_LANGUAGE | language, default is nl |
+| DARKSKY_UNITS    | units, default is ca    |
+| INFLUX_HOST      | influxdb host           |
+| INFLUX_PORT      | influxdb port           |
+| INFLUX_USER      | influxdb username       |
+| INFLUX_PASSWORD  | influxdb password       |
+| INFLUX_DB        | influxdb database       |
 
 ## docker
 Clone the repository and build the docker image
