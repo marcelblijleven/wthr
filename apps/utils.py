@@ -7,8 +7,8 @@ def safe_assign(obj, prop, to_type, default):
 
 def check_daytime(time, daily_data):
     daytime = False
-    daytime_show = -1
-    nighttime_show = 0
+    daytime_show = 0
+    nighttime_show = 1
 
     for day in daily_data:
         sunrise_time = day['sunriseTime']
@@ -16,8 +16,8 @@ def check_daytime(time, daily_data):
 
         if sunrise_time < time < sunset_time:
             daytime = True
-            daytime_show = 0
-            nighttime_show = -1
+            daytime_show = 1
+            nighttime_show = 0
 
             return daytime, daytime_show, nighttime_show
 
