@@ -1,5 +1,3 @@
-import os
-
 from apps.utils import forecast_to_points
 from apps.darksky.client import Darksky
 from apps.influxdb.client import Influx
