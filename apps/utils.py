@@ -25,7 +25,7 @@ def check_daytime(time, daily_data):
 
 
 def get_sun_status(daytime, cloud_cover):
-    return 1 - cloud_cover if daytime else 0
+    return float(1 - cloud_cover if daytime else 0)
 
 
 def forecast_to_points(forecast):
@@ -43,6 +43,7 @@ def forecast_to_points(forecast):
         points = [
             {
                 'measurement': 'forecast',
+                'time': hour['time'],
                 'fields': {
                     'apparent_temperature': safe_assign(hour, 'apparentTemperature', float, 0.0),
                     'temperature': safe_assign(hour, 'temperature', float, 0.0),
@@ -68,9 +69,7 @@ def forecast_to_points(forecast):
                 'tags': {
                     'source': 'darksky-api',
                     'app': 'wthr'
-                },
-                # Add 9 digits to time to match influxdb timestamp
-                'timestamp': str(hour['time']) + '000000000'
+                }
             }
         ]
 
