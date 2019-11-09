@@ -68,7 +68,9 @@ def forecast_to_points(forecast):
                 'tags': {
                     'source': 'darksky-api',
                     'app': 'wthr'
-                }
+                },
+                # Add 9 digits to time to match influxdb timestamp
+                'timestamp': str(hour['time']) + '000000000'
             }
         ]
 
