@@ -1,5 +1,5 @@
 # wthr
-Store darksky weather info in influxdb
+Retrieve weather info from the Darksky api and store it in an influxdb database
 
 ## env variables
 | var              | val                     |
