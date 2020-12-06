@@ -1,6 +1,9 @@
 # wthr
 Retrieve weather info from the Darksky api and store it in an influxdb database
 
+## Deprecated
+Since the Darksky API will stop in 2021, this project is now deprecated
+
 ## env variables
 | var              | val                     |
 |------------------|-------------------------|
